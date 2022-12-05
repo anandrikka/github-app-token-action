@@ -1,6 +1,9 @@
-name: github-app-token-action
+name: anandrikka/github-app-token-action
 description: Get temporary access token for GitHub app.
 author: anandrikka
+branding:
+  icon: check-circle
+  color: green
 inputs:
   private_key:
     description: GitHub app private key

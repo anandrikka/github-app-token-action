@@ -11,6 +11,7 @@ const generateJWTToken = (appId, privateKey) => {
       iss: appId
     }, privateKey, { algorithm: 'RS256' });
   } catch (e) {
+    core.debug('Unable to generate JWT token')
     core.setFailed(e);
   }
 };
