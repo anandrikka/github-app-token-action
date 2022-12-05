@@ -1,0 +1,19 @@
+name: github-app-token-action
+description: Get temporary access token for GitHub app.
+author: anandrikka
+inputs:
+  private_key:
+    description: GitHub app private key
+    required: true
+  app_id:
+    description: GitHub App ID
+    required: true
+  installation_id:
+    description: GitHub app installation id
+    required: false
+outputs:
+  token:
+    description: A token for GitHub app.
+runs:
+  using: node16
+  main: dist/index.js
