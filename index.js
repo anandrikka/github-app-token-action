@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github')
 const jwt = require('jsonwebtoken');
 
-const { repo } = github.context.repo;
+const { owner, repo } = github.context.repo;
 
 const generateJWTToken = (appId, privateKey) => {
   try {
@@ -18,15 +18,16 @@ const generateJWTToken = (appId, privateKey) => {
 
 const fetchInstallationId = async (octokit) => {
   try {
-    const response = await octokit.request(`GET /repos/${repo}/installation`, {
+    const response = await octokit.request(`GET /repos/${owner}/${repo}/installation`, {
       mediaType: {
         previews: ['machine-man']
       }
     });
-    if (!response.data || !response.data.id) {
-      core.setFailed(`Unable to get installation ID. Install Github app on the ${repo}`);
+    if (response.status === 200) {
+      return response.data.id
+    } else {
+      core.setFailed(`Unable to get installation ID. Install Github app on the ${repo}: ${response.data.message}`);
     }
-    return response.data.id;
   } catch (e) {
     core.debug('Unable to get installation token');
     core.setFailed(e);
@@ -35,16 +36,18 @@ const fetchInstallationId = async (octokit) => {
 
 const fetchAppToken = async (octokit, installationId) => {
   try {
-    const response = await octokit.request(`POST /app/installations/${installationId}/access_token`, {
+    const response = await octokit.request(`POST /app/installations/${installationId}/access_tokens`, {
       mediaType: {
         previews: ['machine-man']
       }
     });
-    if (!response.data || !response.data.token) {
-      core.setFailed(`Unable to get app token for ${repo}.`);
+    if (response.status === 201) {
+      return response.data.token;
+    } else {
+      core.setFailed(`Unable to get app token for ${repo}: ${response.data.message}`);
     }
-    return response.data.token;
   } catch (e) {
+    console.log(e)
     core.debug('Unable to get app token')
     core.setFailed(e)
   }

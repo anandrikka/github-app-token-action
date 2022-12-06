@@ -1,0 +1,22 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: npm
+      - run: npm install
+      - run: npm run build
+      - uses: int128/release-typescript-action@v1.18.0
+        with:
+          major-version: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
